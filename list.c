@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include "shape_list.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void AddControls(HWND hwnd);
@@ -23,13 +24,6 @@ bool isDrawing = false;
 int currentShapeType = 0;
 COLORREF drawingColor = RGB(0, 0, 0);
 
-typedef struct {
-    int x, y, size;
-    COLORREF color;
-    int shapeType;
-} Shape;
-
-#define MAX_SHAPES 100
 Shape shapes[MAX_SHAPES];
 int numShapes = 0;
 
@@ -89,17 +83,13 @@ void AddShape(int x, int y, int size, COLORREF color, int shapeType) {
         shapes[numShapes].size = size;
         shapes[numShapes].color = color;
         shapes[numShapes].shapeType = shapeType;
+        shapes[numShapes].listed = 0;
         numShapes++;
     }
 }
 
 void RemoveShape(int index) {
-    if (index >= 0 && index < numShapes) {
-        for (int i = index; i < numShapes - 1; i++) {
-            shapes[i] = shapes[i + 1];
-        }
-        numShapes--;
-    }
+    RemoveShapeAt(shapes, &numShapes, index);
 }
 
 void ClearShapes() {
@@ -144,16 +134,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             if (LOWORD(wParam) == 1001) {
                 char buffer[256];
                 GetWindowText(hEdit, buffer, sizeof(buffer));
-                if (strlen(buffer) > 0) {
-                    SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)buffer);
-                    SetWindowText(hEdit, "");
-                }
                 if (numShapes < MAX_SHAPES) {
+                    int listed = strlen(buffer) > 0;
+                    if (listed) {
+                        SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)buffer);
+                        SetWindowText(hEdit, "");
+                    }
                     shapes[numShapes].x = rand() % clientWidth;
                     shapes[numShapes].y = rand() % clientHeight;
                     shapes[numShapes].size = (rand() % 50) + 20;
                     shapes[numShapes].color = RGB(rand() % 256, rand() % 256, rand() % 256);
                     shapes[numShapes].shapeType = rand() % 2;
+                    shapes[numShapes].listed = listed;
                     numShapes++;
                     InvalidateRect(hwnd, NULL, FALSE);
                 }
@@ -161,7 +153,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             else if (LOWORD(wParam) == 1003) {
                 int selectedIndex = SendMessage(hList, LB_GETCURSEL, 0, 0);
                 if (selectedIndex != LB_ERR) {
-                    RemoveShape(selectedIndex);
+                    RemoveShape(ShapeIndexForListItem(shapes, numShapes, selectedIndex));
                     SendMessage(hList, LB_DELETESTRING, selectedIndex, 0);
                     InvalidateRect(hwnd, NULL, FALSE);
                 }

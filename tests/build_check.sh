@@ -11,3 +11,5 @@ for f in *.c; do
   "$CC" -Wall -c "$f" -o /dev/null
   echo "ok: $f"
 done
+gcc -Wall -Wextra -o "${TMPDIR:-/tmp}/shape_list_test" tests/shape_list_test.c
+"${TMPDIR:-/tmp}/shape_list_test"
