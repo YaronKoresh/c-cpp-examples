@@ -129,8 +129,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
         case WM_COMMAND:
             if (LOWORD(wParam) == 1001) {
-                char buffer[256];
-                GetWindowText(hEdit, buffer, sizeof(buffer));
+                int textLength = GetWindowTextLength(hEdit);
+                char *buffer = malloc(textLength + 1);
+                if (!buffer) {
+                    break;
+                }
+                GetWindowText(hEdit, buffer, textLength + 1);
                 if (MakeRoomForShape(shapes, &numShapes)) {
                     int listed = HasVisibleText(buffer);
                     if (listed) {
@@ -146,6 +150,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     numShapes++;
                     InvalidateRect(hwnd, NULL, FALSE);
                 }
+                free(buffer);
             }
             else if (LOWORD(wParam) == 1003) {
                 int selectedIndex = SendMessage(hList, LB_GETCURSEL, 0, 0);

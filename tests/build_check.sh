@@ -22,4 +22,11 @@ if command -v wine >/dev/null 2>&1; then
       wine "${TMPDIR:-/tmp}/${t}_test.exe" 2>/dev/null | tr -d "\r" | tee /dev/stderr | grep -qx ok
     fi
   done
+  "$CC" -Wall -Wextra -o "${TMPDIR:-/tmp}/list.exe" list.c -lgdi32 -luser32
+  "$CC" -Wall -Wextra -o "${TMPDIR:-/tmp}/list_ui_test.exe" tests/list_ui_test.c -luser32
+  if command -v xvfb-run >/dev/null 2>&1; then
+    (cd "${TMPDIR:-/tmp}" && xvfb-run -a wine list_ui_test.exe list.exe 2>/dev/null | tr -d "\r" | tee /dev/stderr | grep -qx ok)
+  else
+    (cd "${TMPDIR:-/tmp}" && wine list_ui_test.exe list.exe 2>/dev/null | tr -d "\r" | tee /dev/stderr | grep -qx ok)
+  fi
 fi
