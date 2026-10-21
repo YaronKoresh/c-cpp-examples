@@ -220,6 +220,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             isDrawing = true;
             lastDrawX = MouseXFromLParam(lParam);
             lastDrawY = MouseYFromLParam(lParam);
+            /* a click without a move still leaves one shape */
+            AddShape(lastDrawX, lastDrawY, 10, drawingColor, currentShapeType);
+            InvalidateRect(hwnd, NULL, FALSE);
             SetCapture(hwnd);
             break;
         case WM_LBUTTONUP:

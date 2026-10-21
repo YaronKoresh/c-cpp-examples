@@ -61,6 +61,14 @@ int main(int argc, char **argv) {
         puts("FAIL: a drag that is not a multiple of the shape size leaves a gap");
         failed = 1;
     }
+    /* a click without a move draws one shape */
+    SendMessage(window, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(700, 400));
+    SendMessage(window, WM_LBUTTONUP, 0, MAKELPARAM(700, 400));
+    Sleep(500);
+    if (ScreenPixel(window, 704, 404) == RGB(255, 255, 255)) {
+        puts("FAIL: a click without a move draws nothing");
+        failed = 1;
+    }
     TerminateProcess(pi.hProcess, 0);
     if (!failed) {
         puts("ok");
