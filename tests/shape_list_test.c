@@ -65,6 +65,44 @@ int main(void) {
         assert(v >= 0 && v < 7);
     }
 
+    /* the shapes of list items are drawn where no control covers them */
+    for (int width = 0; width <= 1600; width += 37) {
+        for (int height = 0; height <= 1200; height += 41) {
+            ListLayout layout = ComputeListLayout(width, height);
+            const LayoutBox *controls[5] = {&layout.edit, &layout.list, &layout.addButton,
+                                            &layout.removeButton, &layout.clearButton};
+            assert(layout.canvas.width >= 0 && layout.canvas.height >= 0);
+            for (int c = 0; c < 5; c++) {
+                const LayoutBox *b = controls[c];
+                int overlapX = b->x < layout.canvas.x + layout.canvas.width && layout.canvas.x < b->x + b->width;
+                int overlapY = b->y < layout.canvas.y + layout.canvas.height && layout.canvas.y < b->y + b->height;
+                assert(!(overlapX && overlapY && b->width > 0 && b->height > 0 &&
+                         layout.canvas.width > 0 && layout.canvas.height > 0));
+            }
+            if (width >= 800 && height >= 300) {
+                assert(layout.canvas.width >= 100);
+            }
+            for (int i = 0; i < 20; i++) {
+                int x, y, size = 20 + i * 2;
+                RandomShapePosition(&layout.canvas, size, &x, &y);
+                if (layout.canvas.width >= size) {
+                    assert(x >= layout.canvas.x && x + size <= layout.canvas.x + layout.canvas.width);
+                } else {
+                    assert(x == layout.canvas.x);
+                }
+                if (layout.canvas.height >= size) {
+                    assert(y >= layout.canvas.y && y + size <= layout.canvas.y + layout.canvas.height);
+                } else {
+                    assert(y == layout.canvas.y);
+                }
+            }
+        }
+    }
+    {
+        ListLayout layout = ComputeListLayout(800, 600);
+        assert(layout.list.width == LEFT_COLUMN_WIDTH && layout.canvas.x == 500 && layout.canvas.width == 300);
+    }
+
     /* MK_LBUTTON is bit 0 of the mouse message key flags */
     assert(LeftButtonHeld(0x0001) == 1);
     assert(LeftButtonHeld(0x0005) == 1);

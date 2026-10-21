@@ -44,6 +44,51 @@ static inline int RandomBelow(int limit) {
     return rand() % limit;
 }
 
+/* One rectangle of the window layout, in client coordinates. */
+typedef struct {
+    int x, y, width, height;
+} LayoutBox;
+
+typedef struct {
+    LayoutBox edit, list, addButton, removeButton, clearButton;
+    LayoutBox canvas; /* free area on the right where the shapes are drawn */
+} ListLayout;
+
+#define LEFT_COLUMN_WIDTH 480
+
+static inline int AtLeastZero(int value) {
+    return value < 0 ? 0 : value;
+}
+
+/* Layout of list.c for a client area. The edit box, the list box and the buttons stay in the
+   left column, so that the shapes of the list items are drawn in the canvas on the right
+   instead of behind the list box. The canvas is empty when the window is too narrow. */
+static inline ListLayout ComputeListLayout(int clientWidth, int clientHeight) {
+    ListLayout layout;
+    int left = AtLeastZero(clientWidth - 20);
+    int buttonTop = clientHeight - 100;
+    if (left > LEFT_COLUMN_WIDTH) {
+        left = LEFT_COLUMN_WIDTH;
+    }
+    layout.edit = (LayoutBox){10, 10, left, 20};
+    layout.list = (LayoutBox){10, 40, left, AtLeastZero(clientHeight - 150)};
+    layout.addButton = (LayoutBox){10, buttonTop, 150, 30};
+    layout.removeButton = (LayoutBox){170, buttonTop, 150, 30};
+    layout.clearButton = (LayoutBox){330, buttonTop, 150, 30};
+    layout.canvas.x = left + 20;
+    layout.canvas.y = 0;
+    layout.canvas.width = AtLeastZero(clientWidth - layout.canvas.x);
+    layout.canvas.height = AtLeastZero(clientHeight);
+    return layout;
+}
+
+/* Random top-left corner for a shape of the given size that lies completely inside the canvas.
+   A canvas smaller than the shape (for example a minimized window) gives the canvas corner. */
+static inline void RandomShapePosition(const LayoutBox *canvas, int size, int *x, int *y) {
+    *x = canvas->x + RandomBelow(canvas->width - size + 1);
+    *y = canvas->y + RandomBelow(canvas->height - size + 1);
+}
+
 /* True when the left mouse button is held, from the wParam key flags of a mouse message (MK_LBUTTON). */
 static inline int LeftButtonHeld(unsigned long long keyFlags) {
     return (keyFlags & 0x0001) != 0;

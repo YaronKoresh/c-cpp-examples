@@ -12,6 +12,7 @@ void DrawShapes(HDC hdc);
 void AddShape(int x, int y, int size, COLORREF color, int shapeType);
 void RemoveShape(int index);
 void ClearShapes(HWND hwnd);
+void PlaceControl(HWND control, const LayoutBox *box);
 
 HWND hButtonAdd;
 HWND hButtonRemove;
@@ -21,6 +22,7 @@ HWND hList;
 HDC hMemDC;
 HBITMAP hBitmap;
 int clientWidth, clientHeight;
+ListLayout layout;
 bool isDrawing = false;
 int currentShapeType = 0;
 COLORREF drawingColor = RGB(0, 0, 0);
@@ -113,21 +115,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             if (hMemDC) {
                 ReplaceBackBuffer(&hMemDC, &hBitmap, GetDC(hwnd), clientWidth, clientHeight);
             }
-            if (hEdit) {
-                MoveWindow(hEdit, 10, 10, clientWidth - 20, 20, TRUE);
-            }
-            if (hList) {
-                MoveWindow(hList, 10, 40, clientWidth - 20, clientHeight - 150, TRUE);
-            }
-            if (hButtonAdd) {
-                MoveWindow(hButtonAdd, 10, clientHeight - 100, 150, 30, TRUE);
-            }
-            if (hButtonRemove) {
-                MoveWindow(hButtonRemove, 170, clientHeight - 100, 150, 30, TRUE);
-            }
-            if (hButtonClear) {
-                MoveWindow(hButtonClear, 330, clientHeight - 100, 150, 30, TRUE);
-            }
+            layout = ComputeListLayout(clientWidth, clientHeight);
+            PlaceControl(hEdit, &layout.edit);
+            PlaceControl(hList, &layout.list);
+            PlaceControl(hButtonAdd, &layout.addButton);
+            PlaceControl(hButtonRemove, &layout.removeButton);
+            PlaceControl(hButtonClear, &layout.clearButton);
             break;
 
         case WM_COMMAND:
@@ -144,9 +137,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)buffer);
                         SetWindowText(hEdit, "");
                     }
-                    shapes[numShapes].x = RandomBelow(clientWidth);
-                    shapes[numShapes].y = RandomBelow(clientHeight);
                     shapes[numShapes].size = (rand() % 50) + 20;
+                    RandomShapePosition(&layout.canvas, shapes[numShapes].size,
+                                        &shapes[numShapes].x, &shapes[numShapes].y);
                     shapes[numShapes].color = RGB(rand() % 256, rand() % 256, rand() % 256);
                     shapes[numShapes].shapeType = rand() % 2;
                     shapes[numShapes].listed = listed;
@@ -315,5 +308,11 @@ void AddControls(HWND hwnd) {
 void DrawShapes(HDC hdc) {
     for (int i = 0; i < numShapes; i++) {
         DrawShapeOnDC(hdc, &shapes[i]);
+    }
+}
+
+void PlaceControl(HWND control, const LayoutBox *box) {
+    if (control) {
+        MoveWindow(control, box->x, box->y, box->width, box->height, TRUE);
     }
 }
