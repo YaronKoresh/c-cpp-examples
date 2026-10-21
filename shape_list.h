@@ -1,6 +1,8 @@
 #ifndef SHAPE_LIST_H
 #define SHAPE_LIST_H
 
+#include <stdlib.h>
+
 #define MAX_SHAPES 100
 
 typedef struct {
@@ -31,6 +33,14 @@ static inline int MouseXFromLParam(long long lParam) {
 
 static inline int MouseYFromLParam(long long lParam) {
     return (short)((lParam >> 16) & 0xffff);
+}
+
+/* Random number in [0, limit). Returns 0 when limit is below 1 (for example a minimized window). */
+static inline int RandomBelow(int limit) {
+    if (limit < 1) {
+        return 0;
+    }
+    return rand() % limit;
 }
 
 static inline void RemoveShapeAt(Shape *shapes, int *numShapes, int index) {

@@ -137,8 +137,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)buffer);
                         SetWindowText(hEdit, "");
                     }
-                    shapes[numShapes].x = rand() % clientWidth;
-                    shapes[numShapes].y = rand() % clientHeight;
+                    shapes[numShapes].x = RandomBelow(clientWidth);
+                    shapes[numShapes].y = RandomBelow(clientHeight);
                     shapes[numShapes].size = (rand() % 50) + 20;
                     shapes[numShapes].color = RGB(rand() % 256, rand() % 256, rand() % 256);
                     shapes[numShapes].shapeType = rand() % 2;

@@ -57,6 +57,14 @@ int main(void) {
     num = 3;
     assert(MakeRoomForShape(shapes, &num) == 1 && num == 3);
 
+    /* a zero-size window must not divide by zero */
+    assert(RandomBelow(0) == 0);
+    assert(RandomBelow(-5) == 0);
+    for (int i = 0; i < 100; i++) {
+        int v = RandomBelow(7);
+        assert(v >= 0 && v < 7);
+    }
+
     puts("ok");
     return 0;
 }
