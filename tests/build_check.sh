@@ -13,3 +13,11 @@ for f in *.c; do
 done
 gcc -Wall -Wextra -o "${TMPDIR:-/tmp}/shape_list_test" tests/shape_list_test.c
 "${TMPDIR:-/tmp}/shape_list_test"
+if command -v wine >/dev/null 2>&1; then
+  "$CC" -Wall -Wextra -o "${TMPDIR:-/tmp}/backbuffer_test.exe" tests/backbuffer_test.c -lgdi32 -luser32
+  if command -v xvfb-run >/dev/null 2>&1; then
+    xvfb-run -a wine "${TMPDIR:-/tmp}/backbuffer_test.exe" 2>/dev/null | tee /dev/stderr | grep -qx ok
+  else
+    wine "${TMPDIR:-/tmp}/backbuffer_test.exe" 2>/dev/null | tee /dev/stderr | grep -qx ok
+  fi
+fi

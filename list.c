@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include "shape_list.h"
+#include "backbuffer.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void AddControls(HWND hwnd);
@@ -107,11 +108,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             clientWidth = LOWORD(lParam);
             clientHeight = HIWORD(lParam);
             if (hMemDC) {
-                DeleteObject(SelectObject(hMemDC, NULL));
-                DeleteDC(hMemDC);
-                hMemDC = CreateCompatibleDC(GetDC(hwnd));
-                hBitmap = CreateCompatibleBitmap(GetDC(hwnd), clientWidth, clientHeight);
-                SelectObject(hMemDC, hBitmap);
+                ReplaceBackBuffer(&hMemDC, &hBitmap, GetDC(hwnd), clientWidth, clientHeight);
             }
             if (hEdit) {
                 MoveWindow(hEdit, 10, 10, clientWidth - 20, 20, TRUE);
