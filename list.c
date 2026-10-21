@@ -32,8 +32,9 @@ int clientWidth, clientHeight;
 ListLayout layout;
 bool isDrawing = false;
 int currentShapeType = 0;
+int penStyle = 0;
 int lastDrawX = 0, lastDrawY = 0;
-COLORREF drawingColor = RGB(0, 0, 0);
+unsigned long drawingColor = 0;
 
 Shape shapes[MAX_SHAPES];
 int numShapes = 0;
@@ -228,6 +229,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_LBUTTONUP:
             isDrawing = false;
             ReleaseCapture();
+            break;
+        case WM_RBUTTONDOWN:
+            /* a right click steps to the next color and shape of the freehand pen */
+            penStyle = (penStyle + 1) % PEN_STYLES;
+            PenStyleAt(penStyle, &drawingColor, &currentShapeType);
             break;
         case WM_CAPTURECHANGED:
             isDrawing = false;

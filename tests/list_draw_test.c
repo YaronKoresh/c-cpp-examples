@@ -69,6 +69,29 @@ int main(int argc, char **argv) {
         puts("FAIL: a click without a move draws nothing");
         failed = 1;
     }
+    /* a right click changes the pen: the next color, then (after six clicks) the ellipse */
+    SendMessage(window, WM_RBUTTONDOWN, MK_RBUTTON, MAKELPARAM(650, 450));
+    SendMessage(window, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(650, 450));
+    SendMessage(window, WM_LBUTTONUP, 0, MAKELPARAM(650, 450));
+    Sleep(500);
+    if (ScreenPixel(window, 655, 455) != RGB(255, 0, 0)) {
+        puts("FAIL: a right click does not change the color of the pen");
+        failed = 1;
+    }
+    for (int i = 0; i < 5; i++) {
+        SendMessage(window, WM_RBUTTONDOWN, MK_RBUTTON, MAKELPARAM(650, 450));
+    }
+    SendMessage(window, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(550, 450));
+    SendMessage(window, WM_LBUTTONUP, 0, MAKELPARAM(550, 450));
+    Sleep(500);
+    if (ScreenPixel(window, 555, 455) != RGB(0, 0, 0)) {
+        puts("FAIL: the pen does not go back to black after six right clicks");
+        failed = 1;
+    }
+    if (ScreenPixel(window, 550, 450) == RGB(0, 0, 0)) {
+        puts("FAIL: the pen shape did not change to an ellipse");
+        failed = 1;
+    }
     TerminateProcess(pi.hProcess, 0);
     if (!failed) {
         puts("ok");

@@ -153,6 +153,30 @@ int main(void) {
     assert(HasVisibleWideText(L" a ") == 1);
     assert(HasVisibleWideText(L"\x05d0") == 1);
 
+    /* the pen starts black as a rectangle, steps through the colors, then the ellipses, then wraps */
+    {
+        unsigned long color;
+        int type;
+        PenStyleAt(0, &color, &type);
+        assert(color == 0 && type == 0);
+        PenStyleAt(1, &color, &type);
+        assert(color == 0x0000fful && type == 0);
+        PenStyleAt(PEN_COLORS, &color, &type);
+        assert(color == 0 && type == 1);
+        PenStyleAt(PEN_STYLES, &color, &type);
+        assert(color == 0 && type == 0);
+        PenStyleAt(-1, &color, &type);
+        assert(color == 0x800080ul && type == 1);
+        for (int i = 0; i < PEN_STYLES; i++) {
+            unsigned long other;
+            int otherType;
+            PenStyleAt(i, &color, &type);
+            PenStyleAt(i + 1, &other, &otherType);
+            assert(color != other || type != otherType);
+            assert(type == 0 || type == 1);
+        }
+    }
+
     puts("ok");
     return 0;
 }

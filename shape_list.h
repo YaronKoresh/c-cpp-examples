@@ -112,6 +112,24 @@ static inline int StrokeSteps(int x0, int y0, int x1, int y1, int size) {
     return (distance + size - 1) / size > 1 ? (distance + size - 1) / size : 1;
 }
 
+#define PEN_COLORS 6
+#define PEN_STYLES (PEN_COLORS * 2)
+
+/* The freehand pen styles that a right click steps through: every color as a rectangle
+   (shape type 0), then every color as an ellipse (shape type 1), then the first style again.
+   The colors are black, red, green, blue, orange and purple, as 0x00BBGGRR values. */
+static inline void PenStyleAt(int index, unsigned long *color, int *shapeType) {
+    static const unsigned long colors[PEN_COLORS] = {
+        0x000000ul, 0x0000fful, 0x00c800ul, 0xff0000ul, 0x0080fful, 0x800080ul
+    };
+    index %= PEN_STYLES;
+    if (index < 0) {
+        index += PEN_STYLES;
+    }
+    *color = colors[index % PEN_COLORS];
+    *shapeType = index / PEN_COLORS;
+}
+
 /* True when the left mouse button is held, from the wParam key flags of a mouse message (MK_LBUTTON). */
 static inline int LeftButtonHeld(unsigned long long keyFlags) {
     return (keyFlags & 0x0001) != 0;
