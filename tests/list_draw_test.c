@@ -52,6 +52,15 @@ int main(int argc, char **argv) {
         puts("FAIL: the line is drawn far from the mouse path");
         failed = 1;
     }
+    /* a drag of 19 pixels is not a multiple of the shape size 10 and must still be continuous */
+    SendMessage(window, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(600, 200));
+    SendMessage(window, WM_MOUSEMOVE, MK_LBUTTON, MAKELPARAM(619, 200));
+    SendMessage(window, WM_LBUTTONUP, 0, MAKELPARAM(619, 200));
+    Sleep(500);
+    if (ScreenPixel(window, 612, 205) == RGB(255, 255, 255)) {
+        puts("FAIL: a drag that is not a multiple of the shape size leaves a gap");
+        failed = 1;
+    }
     TerminateProcess(pi.hProcess, 0);
     if (!failed) {
         puts("ok");
