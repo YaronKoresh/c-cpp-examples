@@ -7,6 +7,9 @@ void AddControls(HWND hwnd);
 HWND hEdit;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    (void)hPrevInstance;
+    (void)lpCmdLine;
+
     const char CLASS_NAME[] = "MyWindowClass";
 
     WNDCLASS wc;

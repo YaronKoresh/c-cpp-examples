@@ -28,6 +28,6 @@ On Windows with MinGW the same commands work with `gcc`.
 bash tests/build_check.sh
 ```
 
-The script compiles every example (as C, as strict C11 and as C++), rejects non-breaking spaces in the sources and runs the unit
+The script compiles every example (as C, as strict C11 and as C++) with `-Wall -Wextra -Werror`, rejects non-breaking spaces in the sources and runs the unit
 tests for `shape_list.h`. When `wine` is installed (and `xvfb-run`, for a virtual display) it also
 runs the GDI tests and drives `list.exe` through its controls.

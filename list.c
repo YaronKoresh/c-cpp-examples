@@ -8,7 +8,7 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void AddControls(HWND hwnd);
-void DrawShapes(HWND hwnd, HDC hdc);
+void DrawShapes(HDC hdc);
 void AddShape(int x, int y, int size, COLORREF color, int shapeType);
 void RemoveShape(int index);
 void ClearShapes(HWND hwnd);
@@ -29,6 +29,9 @@ Shape shapes[MAX_SHAPES];
 int numShapes = 0;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    (void)hPrevInstance;
+    (void)lpCmdLine;
+
     srand(time(NULL));
 
     const char CLASS_NAME[] = "MyWindowClass";
@@ -178,7 +181,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             }
 
             Rectangle(hMemDC, 0, 0, clientWidth, clientHeight);
-            DrawShapes(hwnd, hMemDC);
+            DrawShapes(hMemDC);
 
             BitBlt(hdc,
                 ps.rcPaint.left, ps.rcPaint.top,
@@ -309,7 +312,7 @@ void AddControls(HWND hwnd) {
     SendMessage(hButtonClear, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
 }
 
-void DrawShapes(HWND hwnd, HDC hdc) {
+void DrawShapes(HDC hdc) {
     for (int i = 0; i < numShapes; i++) {
         DrawShapeOnDC(hdc, &shapes[i]);
     }
