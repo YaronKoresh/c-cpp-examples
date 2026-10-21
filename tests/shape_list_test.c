@@ -65,6 +65,12 @@ int main(void) {
         assert(v >= 0 && v < 7);
     }
 
+    /* MK_LBUTTON is bit 0 of the mouse message key flags */
+    assert(LeftButtonHeld(0x0001) == 1);
+    assert(LeftButtonHeld(0x0005) == 1);
+    assert(LeftButtonHeld(0x0004) == 0);
+    assert(LeftButtonHeld(0) == 0);
+
     puts("ok");
     return 0;
 }

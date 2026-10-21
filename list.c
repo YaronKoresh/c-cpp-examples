@@ -192,8 +192,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             isDrawing = false;
             ReleaseCapture();
             break;
+        case WM_CAPTURECHANGED:
+            isDrawing = false;
+            break;
         case WM_MOUSEMOVE:
-            if (isDrawing) {
+            if (isDrawing && LeftButtonHeld(wParam)) {
                 int x = MouseXFromLParam(lParam);
                 int y = MouseYFromLParam(lParam);
                 AddShape(x, y, 10, drawingColor, currentShapeType);

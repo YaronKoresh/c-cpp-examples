@@ -43,6 +43,11 @@ static inline int RandomBelow(int limit) {
     return rand() % limit;
 }
 
+/* True when the left mouse button is held, from the wParam key flags of a mouse message (MK_LBUTTON). */
+static inline int LeftButtonHeld(unsigned long long keyFlags) {
+    return (keyFlags & 0x0001) != 0;
+}
+
 static inline void RemoveShapeAt(Shape *shapes, int *numShapes, int index) {
     if (index >= 0 && index < *numShapes) {
         for (int i = index; i < *numShapes - 1; i++) {
