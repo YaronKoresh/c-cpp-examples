@@ -9,6 +9,8 @@ for f in *.c; do
     exit 1
   fi
   "$CC" -Wall -c "$f" -o /dev/null
+  "$CC" -std=c11 -pedantic -Wall -c "$f" -o /dev/null
+  "${CXX:-x86_64-w64-mingw32-g++}" -Wall -c -x c++ "$f" -o /dev/null
   echo "ok: $f"
 done
 gcc -Wall -Wextra -o "${TMPDIR:-/tmp}/shape_list_test" tests/shape_list_test.c

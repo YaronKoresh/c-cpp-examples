@@ -130,7 +130,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_COMMAND:
             if (LOWORD(wParam) == 1001) {
                 int textLength = GetWindowTextLength(hEdit);
-                char *buffer = malloc(textLength + 1);
+                char *buffer = (char *)malloc(textLength + 1);
                 if (!buffer) {
                     break;
                 }
@@ -165,7 +165,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 SendMessage(hList, LB_RESETCONTENT, 0, 0);
             }
             break;
-        case WM_PAINT:
+        case WM_PAINT: {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
 
@@ -189,6 +189,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
             EndPaint(hwnd, &ps);
             break;
+        }
         case WM_LBUTTONDOWN:
             isDrawing = true;
             SetCapture(hwnd);
