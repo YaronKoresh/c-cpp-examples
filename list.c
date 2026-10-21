@@ -19,6 +19,7 @@ void AddShape(int x, int y, int size, COLORREF color, int shapeType);
 void RemoveShape(int index);
 void ClearShapes(HWND hwnd);
 void PlaceControl(HWND control, const LayoutBox *box);
+void UpdateListScrollExtent(void);
 
 HWND hButtonAdd;
 HWND hButtonRemove;
@@ -153,6 +154,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     int listed = HasVisibleWideText(buffer);
                     if (listed) {
                         SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)buffer);
+                        UpdateListScrollExtent();
                         SetWindowText(hEdit, L"");
                     }
                     shapes[numShapes].size = (rand() % 50) + 20;
@@ -174,12 +176,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 if (selectedIndex != LB_ERR) {
                     RemoveShape(ShapeIndexForListItem(shapes, numShapes, selectedIndex));
                     SendMessage(hList, LB_DELETESTRING, selectedIndex, 0);
+                    UpdateListScrollExtent();
                     InvalidateRect(hwnd, NULL, FALSE);
                 }
             }
             else if (LOWORD(wParam) == 1004) {
                 ClearShapes(hwnd);
                 SendMessage(hList, LB_RESETCONTENT, 0, 0);
+                UpdateListScrollExtent();
             }
             break;
         case WM_PAINT: {
@@ -277,7 +281,7 @@ void AddControls(HWND hwnd) {
         WS_EX_CLIENTEDGE,
         L"LISTBOX",
         L"",
-        WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | LBS_NOTIFY,
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | WS_HSCROLL | LBS_NOTIFY,
         10, 40, 780, 450,
         hwnd,
         (HMENU)1002,
@@ -336,4 +340,35 @@ void PlaceControl(HWND control, const LayoutBox *box) {
     if (control) {
         MoveWindow(control, box->x, box->y, box->width, box->height, TRUE);
     }
+}
+
+/* Sets the width the list box can scroll sideways to the width of its widest item, so that
+   items wider than the list box can be read. */
+void UpdateListScrollExtent(void) {
+    HDC hdc = GetDC(hList);
+    HFONT font = (HFONT)SendMessage(hList, WM_GETFONT, 0, 0);
+    HGDIOBJ oldFont = font ? SelectObject(hdc, font) : NULL;
+    int count = (int)SendMessage(hList, LB_GETCOUNT, 0, 0);
+    int widest = 0;
+    for (int i = 0; i < count; i++) {
+        int length = (int)SendMessage(hList, LB_GETTEXTLEN, i, 0);
+        if (length < 0) {
+            continue;
+        }
+        wchar_t *text = (wchar_t *)malloc((length + 1) * sizeof(wchar_t));
+        if (!text) {
+            continue;
+        }
+        SendMessage(hList, LB_GETTEXT, i, (LPARAM)text);
+        SIZE size;
+        if (GetTextExtentPoint32(hdc, text, length, &size) && size.cx > widest) {
+            widest = size.cx;
+        }
+        free(text);
+    }
+    if (oldFont) {
+        SelectObject(hdc, oldFont);
+    }
+    ReleaseDC(hList, hdc);
+    SendMessage(hList, LB_SETHORIZONTALEXTENT, widest + 8, 0);
 }
