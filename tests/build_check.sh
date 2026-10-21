@@ -21,6 +21,9 @@ for f in *.c; do
   "${CXX:-x86_64-w64-mingw32-g++}" -Wall -Wextra -Werror -c -x c++ "$f" -o /dev/null
   echo "ok: $f"
 done
+for word in Enter Delete Tab; do
+  grep -q "$word" README.md || { echo "FAIL: README.md does not mention $word"; exit 1; }
+done
 gcc -Wall -Wextra -o "${TMPDIR:-/tmp}/shape_list_test" tests/shape_list_test.c
 "${TMPDIR:-/tmp}/shape_list_test"
 if command -v wine >/dev/null 2>&1; then
