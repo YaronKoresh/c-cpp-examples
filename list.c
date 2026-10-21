@@ -197,8 +197,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             break;
         case WM_MOUSEMOVE:
             if (isDrawing) {
-                int x = LOWORD(lParam);
-                int y = HIWORD(lParam);
+                int x = MouseXFromLParam(lParam);
+                int y = MouseYFromLParam(lParam);
                 AddShape(x, y, 10, drawingColor, currentShapeType);
                 InvalidateRect(hwnd, NULL, FALSE);
             }

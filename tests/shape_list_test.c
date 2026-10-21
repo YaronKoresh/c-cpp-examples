@@ -31,6 +31,12 @@ int main(void) {
     RemoveShapeAt(shapes, &num, ShapeIndexForListItem(shapes, num, 5));
     assert(num == 3);
 
+    /* mouse coordinates left of or above the window are negative, packed as 16-bit halves */
+    assert(MouseXFromLParam(((long long)(unsigned short)-8 << 16) | (unsigned short)-5) == -5);
+    assert(MouseYFromLParam(((long long)(unsigned short)-8 << 16) | (unsigned short)-5) == -8);
+    assert(MouseXFromLParam(((long long)300 << 16) | 120) == 120);
+    assert(MouseYFromLParam(((long long)300 << 16) | 120) == 300);
+
     puts("ok");
     return 0;
 }

@@ -24,6 +24,15 @@ static inline int ShapeIndexForListItem(const Shape *shapes, int numShapes, int 
     return -1;
 }
 
+/* Signed client coordinates packed in a mouse message lParam (like GET_X_LPARAM / GET_Y_LPARAM). */
+static inline int MouseXFromLParam(long long lParam) {
+    return (short)(lParam & 0xffff);
+}
+
+static inline int MouseYFromLParam(long long lParam) {
+    return (short)((lParam >> 16) & 0xffff);
+}
+
 static inline void RemoveShapeAt(Shape *shapes, int *numShapes, int index) {
     if (index >= 0 && index < *numShapes) {
         for (int i = index; i < *numShapes - 1; i++) {
