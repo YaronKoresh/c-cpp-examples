@@ -85,6 +85,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             SendMessage(hwnd, WM_COMMAND, MAKEWPARAM(1001, BN_CLICKED), (LPARAM)hButtonAdd);
             continue;
         }
+        /* Lets Tab and Shift+Tab move the focus between the controls that have WS_TABSTOP. */
+        if (IsDialogMessage(hwnd, &msg)) {
+            continue;
+        }
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
@@ -240,7 +244,7 @@ void AddControls(HWND hwnd) {
         WS_EX_CLIENTEDGE,
         L"EDIT",
         L"",
-        WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,
         10, 10, 780, 20,
         hwnd,
         (HMENU)1000,
@@ -269,7 +273,7 @@ void AddControls(HWND hwnd) {
         WS_EX_CLIENTEDGE,
         L"LISTBOX",
         L"",
-        WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_NOTIFY,
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | LBS_NOTIFY,
         10, 40, 780, 450,
         hwnd,
         (HMENU)1002,
@@ -282,7 +286,7 @@ void AddControls(HWND hwnd) {
         0,
         L"BUTTON",
         L"Add Item and Shape",
-        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
         10, 500, 150, 30,
         hwnd,
         (HMENU)1001,
@@ -295,7 +299,7 @@ void AddControls(HWND hwnd) {
         0,
         L"BUTTON",
         L"Remove Item",
-        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
         170, 500, 150, 30,
         hwnd,
         (HMENU)1003,
@@ -308,7 +312,7 @@ void AddControls(HWND hwnd) {
         0,
         L"BUTTON",
         L"Clear All",
-        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
         330, 500, 150, 30,
         hwnd,
         (HMENU)1004,
