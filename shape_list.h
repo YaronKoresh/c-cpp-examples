@@ -2,6 +2,7 @@
 #define SHAPE_LIST_H
 
 #include <stdlib.h>
+#include <ctype.h>
 
 #define MAX_SHAPES 100
 
@@ -46,6 +47,16 @@ static inline int RandomBelow(int limit) {
 /* True when the left mouse button is held, from the wParam key flags of a mouse message (MK_LBUTTON). */
 static inline int LeftButtonHeld(unsigned long long keyFlags) {
     return (keyFlags & 0x0001) != 0;
+}
+
+/* True when the text has at least one character that is not white space. */
+static inline int HasVisibleText(const char *text) {
+    for (; *text; text++) {
+        if (!isspace((unsigned char)*text)) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 static inline void RemoveShapeAt(Shape *shapes, int *numShapes, int index) {

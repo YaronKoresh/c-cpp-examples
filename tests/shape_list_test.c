@@ -71,6 +71,12 @@ int main(void) {
     assert(LeftButtonHeld(0x0004) == 0);
     assert(LeftButtonHeld(0) == 0);
 
+    /* white space only is not a list item */
+    assert(HasVisibleText("") == 0);
+    assert(HasVisibleText("   \t ") == 0);
+    assert(HasVisibleText(" a ") == 1);
+    assert(HasVisibleText("\xd7\x90") == 1);
+
     puts("ok");
     return 0;
 }

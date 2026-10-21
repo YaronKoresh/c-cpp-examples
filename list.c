@@ -132,7 +132,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 char buffer[256];
                 GetWindowText(hEdit, buffer, sizeof(buffer));
                 if (MakeRoomForShape(shapes, &numShapes)) {
-                    int listed = strlen(buffer) > 0;
+                    int listed = HasVisibleText(buffer);
                     if (listed) {
                         SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)buffer);
                         SetWindowText(hEdit, "");
