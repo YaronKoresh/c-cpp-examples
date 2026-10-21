@@ -86,6 +86,23 @@ int main(int argc, char **argv) {
         failed = 1;
     }
 
+    /* Enter in the edit box adds the item like the button, and an empty box adds nothing */
+    SetWindowText(edit, "entered");
+    PostMessage(edit, WM_KEYDOWN, VK_RETURN, 0);
+    Sleep(300);
+    char left[32] = "x";
+    SendMessage(edit, WM_GETTEXT, sizeof(left), (LPARAM)left);
+    if (ListCount() != 3 || left[0] != 0) {
+        puts("FAIL: Enter did not add the item");
+        failed = 1;
+    }
+    PostMessage(edit, WM_KEYDOWN, VK_RETURN, 0);
+    Sleep(300);
+    if (ListCount() != 3) {
+        puts("FAIL: Enter in an empty box added an item");
+        failed = 1;
+    }
+
     /* a full list tells the user why Add does nothing */
     while (ListCount() < 100) {
         SetWindowText(edit, "item");

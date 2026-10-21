@@ -81,6 +81,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
+        if (msg.message == WM_KEYDOWN && msg.wParam == VK_RETURN && hEdit && msg.hwnd == hEdit) {
+            SendMessage(hwnd, WM_COMMAND, MAKEWPARAM(1001, BN_CLICKED), (LPARAM)hButtonAdd);
+            continue;
+        }
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
