@@ -176,7 +176,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 int selectedIndex = SendMessage(hList, LB_GETCURSEL, 0, 0);
                 if (selectedIndex != LB_ERR) {
                     RemoveShape(ShapeIndexForListItem(shapes, numShapes, selectedIndex));
-                    SendMessage(hList, LB_DELETESTRING, selectedIndex, 0);
+                    int remaining = (int)SendMessage(hList, LB_DELETESTRING, selectedIndex, 0);
+                    /* keeps a selection, so that Delete can be pressed again for the next item */
+                    if (remaining != LB_ERR && remaining > 0) {
+                        SendMessage(hList, LB_SETCURSEL, selectedIndex < remaining ? selectedIndex : remaining - 1, 0);
+                    }
                     UpdateListScrollExtent();
                     InvalidateRect(hwnd, NULL, FALSE);
                 }

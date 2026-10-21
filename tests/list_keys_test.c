@@ -79,7 +79,33 @@ int main(int argc, char **argv) {
         }
     }
 
+    /* the item that took the place of the removed one is selected, so Delete works again */
+    if (SendMessage(listBox, LB_GETCURSEL, 0, 0) != 1) {
+        puts("FAIL: no item is selected after Delete");
+        failed = 1;
+    }
+    keybd_event(VK_DELETE, 0, 0, 0);
+    keybd_event(VK_DELETE, 0, KEYEVENTF_KEYUP, 0);
+    Sleep(300);
+    if (ListCount() != 1) {
+        puts("FAIL: a second Delete did not remove the next item");
+        failed = 1;
+    } else if (SendMessage(listBox, LB_GETCURSEL, 0, 0) != 0) {
+        puts("FAIL: the last item is not selected after Delete");
+        failed = 1;
+    }
+    keybd_event(VK_DELETE, 0, 0, 0);
+    keybd_event(VK_DELETE, 0, KEYEVENTF_KEYUP, 0);
+    Sleep(300);
+    if (ListCount() != 0) {
+        puts("FAIL: Delete did not remove the last item");
+        failed = 1;
+    }
+    AddItem("again");
+    AddItem("more");
+
     /* Delete with nothing selected removes nothing */
+    SendMessage(listBox, LB_SETCURSEL, (WPARAM)-1, 0);
     keybd_event(VK_DELETE, 0, 0, 0);
     keybd_event(VK_DELETE, 0, KEYEVENTF_KEYUP, 0);
     Sleep(300);
