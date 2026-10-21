@@ -72,6 +72,32 @@ int main(int argc, char **argv) {
         failed = 1;
     }
 
+    /* a full list tells the user why Add does nothing */
+    while (ListCount() < 100) {
+        SetWindowText(edit, "item");
+        SendMessage(window, WM_COMMAND, MAKEWPARAM(1001, BN_CLICKED), 0);
+    }
+    SetWindowText(edit, "one too many");
+    PostMessage(window, WM_COMMAND, MAKEWPARAM(1001, BN_CLICKED), 0);
+    HWND notice = NULL;
+    for (int i = 0; i < 30 && !notice; i++) {
+        Sleep(100);
+        notice = FindWindow("#32770", "Add Item and Shape");
+    }
+    if (!notice) {
+        puts("FAIL: no message when the list is full");
+        failed = 1;
+    } else {
+        PostMessage(notice, WM_CLOSE, 0, 0);
+        Sleep(300);
+    }
+    char kept[32] = "";
+    SendMessage(edit, WM_GETTEXT, sizeof(kept), (LPARAM)kept);
+    if (ListCount() != 100 || strcmp(kept, "one too many") != 0) {
+        puts("FAIL: a full list changed the list or the text");
+        failed = 1;
+    }
+
     TerminateProcess(pi.hProcess, 0);
     if (!failed) {
         puts("ok");

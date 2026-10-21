@@ -145,6 +145,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     shapes[numShapes].listed = listed;
                     numShapes++;
                     InvalidateRect(hwnd, NULL, FALSE);
+                } else {
+                    MessageBox(hwnd, "The list is full. Remove an item first.", "Add Item and Shape",
+                               MB_OK | MB_ICONINFORMATION);
                 }
                 free(buffer);
             }
