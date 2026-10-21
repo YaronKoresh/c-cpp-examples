@@ -1,3 +1,9 @@
+#ifndef UNICODE
+#define UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,7 +42,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     srand(time(NULL));
 
-    const char CLASS_NAME[] = "MyWindowClass";
+    const wchar_t CLASS_NAME[] = L"MyWindowClass";
     WNDCLASS wc;
     ZeroMemory(&wc, sizeof(wc));
 
@@ -48,14 +54,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 
     if (!RegisterClass(&wc)) {
-        MessageBox(NULL, "Window registration failed!", "Error", MB_OK | MB_ICONERROR);
+        MessageBox(NULL, L"Window registration failed!", L"Error", MB_OK | MB_ICONERROR);
         return 1;
     }
 
     HWND hwnd = CreateWindowEx(
         0,
         CLASS_NAME,
-        "My colorful list",
+        L"My colorful list",
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT,
         800, 600,
@@ -66,7 +72,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     );
 
     if (!hwnd) {
-        MessageBox(NULL, "Window creation failed!", "Error", MB_OK | MB_ICONERROR);
+        MessageBox(NULL, L"Window creation failed!", L"Error", MB_OK | MB_ICONERROR);
         return 1;
     }
 
@@ -126,16 +132,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_COMMAND:
             if (LOWORD(wParam) == 1001) {
                 int textLength = GetWindowTextLength(hEdit);
-                char *buffer = (char *)malloc(textLength + 1);
+                wchar_t *buffer = (wchar_t *)malloc((textLength + 1) * sizeof(wchar_t));
                 if (!buffer) {
                     break;
                 }
                 GetWindowText(hEdit, buffer, textLength + 1);
                 if (MakeRoomForShape(shapes, &numShapes)) {
-                    int listed = HasVisibleText(buffer);
+                    int listed = HasVisibleWideText(buffer);
                     if (listed) {
                         SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)buffer);
-                        SetWindowText(hEdit, "");
+                        SetWindowText(hEdit, L"");
                     }
                     shapes[numShapes].size = (rand() % 50) + 20;
                     RandomShapePosition(&layout.canvas, shapes[numShapes].size,
@@ -146,7 +152,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     numShapes++;
                     InvalidateRect(hwnd, NULL, FALSE);
                 } else {
-                    MessageBox(hwnd, "The list is full. Remove an item first.", "Add Item and Shape",
+                    MessageBox(hwnd, L"The list is full. Remove an item first.", L"Add Item and Shape",
                                MB_OK | MB_ICONINFORMATION);
                 }
                 free(buffer);
@@ -228,8 +234,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 void AddControls(HWND hwnd) {
     hEdit = CreateWindowEx(
         WS_EX_CLIENTEDGE,
-        "EDIT",
-        "",
+        L"EDIT",
+        L"",
         WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
         10, 10, 780, 20,
         hwnd,
@@ -251,14 +257,14 @@ void AddControls(HWND hwnd) {
         CLIP_DEFAULT_PRECIS,
         DEFAULT_QUALITY,
         DEFAULT_PITCH | FF_SWISS,
-        "Arial"
+        L"Arial"
     );
     SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
 
     hList = CreateWindowEx(
         WS_EX_CLIENTEDGE,
-        "LISTBOX",
-        "",
+        L"LISTBOX",
+        L"",
         WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_NOTIFY,
         10, 40, 780, 450,
         hwnd,
@@ -270,8 +276,8 @@ void AddControls(HWND hwnd) {
 
     hButtonAdd = CreateWindowEx(
         0,
-        "BUTTON",
-        "Add Item and Shape",
+        L"BUTTON",
+        L"Add Item and Shape",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
         10, 500, 150, 30,
         hwnd,
@@ -283,8 +289,8 @@ void AddControls(HWND hwnd) {
 
     hButtonRemove = CreateWindowEx(
         0,
-        "BUTTON",
-        "Remove Item",
+        L"BUTTON",
+        L"Remove Item",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
         170, 500, 150, 30,
         hwnd,
@@ -296,8 +302,8 @@ void AddControls(HWND hwnd) {
 
     hButtonClear = CreateWindowEx(
         0,
-        "BUTTON",
-        "Clear All",
+        L"BUTTON",
+        L"Clear All",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
         330, 500, 150, 30,
         hwnd,

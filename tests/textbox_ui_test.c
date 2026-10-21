@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 
-/* Starts textbox.exe with its output in a file, types 400 characters and checks that the
-   last line printed by the example holds all of them. */
+/* Starts textbox.exe with its output in a file, types 400 letters and four Hebrew letters and
+   checks that the last line printed by the example holds all of them, as UTF-8. */
 #define TYPED 400
+#define HEBREW "\xd7\xa9\xd7\x9c\xd7\x95\xd7\x9d"
 #define LABEL "Edit control text: "
 
 int main(int argc, char **argv) {
@@ -49,6 +50,10 @@ int main(int argc, char **argv) {
     for (int i = 0; i < TYPED; i++) {
         SendMessage(edit, WM_CHAR, (WPARAM)('a' + i % 26), 0);
     }
+    const WCHAR hebrew[] = {0x5e9, 0x5dc, 0x5d5, 0x5dd};
+    for (int i = 0; i < 4; i++) {
+        SendMessageW(edit, WM_CHAR, (WPARAM)hebrew[i], 0);
+    }
     SendMessage(window, WM_CLOSE, 0, 0);
     if (WaitForSingleObject(pi.hProcess, 10000) != WAIT_OBJECT_0) {
         TerminateProcess(pi.hProcess, 0);
@@ -73,8 +78,12 @@ int main(int argc, char **argv) {
     }
     last += strlen(LABEL);
     size_t length = strcspn(last, "\r\n");
-    if (length != TYPED) {
-        printf("FAIL: the last printed text has %d characters instead of %d\n", (int)length, TYPED);
+    if (length != TYPED + strlen(HEBREW)) {
+        printf("FAIL: the last printed text has %d bytes instead of %d\n", (int)length, (int)(TYPED + strlen(HEBREW)));
+        return 1;
+    }
+    if (strncmp(last + TYPED, HEBREW, strlen(HEBREW)) != 0) {
+        puts("FAIL: the Hebrew letters were not printed as UTF-8");
         return 1;
     }
     puts("ok");

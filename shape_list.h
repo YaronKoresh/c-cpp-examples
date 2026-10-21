@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#include <wctype.h>
 
 #define MAX_SHAPES 100
 
@@ -98,6 +99,16 @@ static inline int LeftButtonHeld(unsigned long long keyFlags) {
 static inline int HasVisibleText(const char *text) {
     for (; *text; text++) {
         if (!isspace((unsigned char)*text)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/* Same as HasVisibleText for the wide text of a Unicode edit control. */
+static inline int HasVisibleWideText(const wchar_t *text) {
+    for (; *text; text++) {
+        if (!iswspace((wint_t)*text)) {
             return 1;
         }
     }

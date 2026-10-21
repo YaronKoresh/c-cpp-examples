@@ -114,6 +114,10 @@ int main(void) {
     assert(HasVisibleText("   \t ") == 0);
     assert(HasVisibleText(" a ") == 1);
     assert(HasVisibleText("\xd7\x90") == 1);
+    assert(HasVisibleWideText(L"") == 0);
+    assert(HasVisibleWideText(L"   \t ") == 0);
+    assert(HasVisibleWideText(L" a ") == 1);
+    assert(HasVisibleWideText(L"\x05d0") == 1);
 
     puts("ok");
     return 0;

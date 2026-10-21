@@ -1,3 +1,9 @@
+#ifndef UNICODE
+#define UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,13 +11,23 @@
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void AddControls(HWND hwnd);
 
+/* Prints a prefix and a wide string as one UTF-8 line, because stdout is a byte stream. */
+static void PrintUtf8Line(const char *prefix, const wchar_t *text) {
+    int size = WideCharToMultiByte(CP_UTF8, 0, text, -1, NULL, 0, NULL, NULL);
+    char *utf8 = size > 0 ? (char *)malloc(size) : NULL;
+    if (utf8 && WideCharToMultiByte(CP_UTF8, 0, text, -1, utf8, size, NULL, NULL) > 0) {
+        printf("%s%s\n", prefix, utf8);
+    }
+    free(utf8);
+}
+
 HWND hEdit;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     (void)hPrevInstance;
     (void)lpCmdLine;
 
-    const char CLASS_NAME[] = "MyWindowClass";
+    const wchar_t CLASS_NAME[] = L"MyWindowClass";
 
     WNDCLASS wc;
     ZeroMemory(&wc, sizeof(wc));
@@ -24,14 +40,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wc.style = CS_HREDRAW | CS_VREDRAW;
 
     if (!RegisterClass(&wc)) {
-        MessageBox(NULL, "Window registration failed!", "Error", MB_OK | MB_ICONERROR);
+        MessageBox(NULL, L"Window registration failed!", L"Error", MB_OK | MB_ICONERROR);
         return 1;
     }
 
     HWND hwnd = CreateWindowEx(
         0,
         CLASS_NAME,
-        "My First Textbox",
+        L"My First Textbox",
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT,
         800, 600,
@@ -42,7 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     );
 
     if (!hwnd) {
-        MessageBox(NULL, "Window creation failed!", "Error", MB_OK | MB_ICONERROR);
+        MessageBox(NULL, L"Window creation failed!", L"Error", MB_OK | MB_ICONERROR);
         return 1;
     }
 
@@ -76,10 +92,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             if (LOWORD(wParam) == 1001) {
                 if (HIWORD(wParam) == EN_CHANGE) {
                     int textLength = GetWindowTextLength(hEdit);
-                    char *buffer = (char *)malloc(textLength + 1);
+                    wchar_t *buffer = (wchar_t *)malloc((textLength + 1) * sizeof(wchar_t));
                     if (buffer) {
                         GetWindowText(hEdit, buffer, textLength + 1);
-                        printf("Edit control text: %s\n", buffer);
+                        PrintUtf8Line("Edit control text: ", buffer);
                         free(buffer);
                     }
                 }
@@ -99,8 +115,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 void AddControls(HWND hwnd) {
     hEdit = CreateWindowEx(
         WS_EX_CLIENTEDGE,
-        "EDIT",
-        "",
+        L"EDIT",
+        L"",
         WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL,
         10, 10, 780, 580,
         hwnd,
@@ -109,7 +125,7 @@ void AddControls(HWND hwnd) {
         NULL
     );
     if (hEdit == NULL){
-        MessageBox(hwnd, "Could not create edit control", "Error", MB_OK);
+        MessageBox(hwnd, L"Could not create edit control", L"Error", MB_OK);
         return;
     }
     HFONT hFont = CreateFont(
@@ -126,7 +142,7 @@ void AddControls(HWND hwnd) {
         CLIP_DEFAULT_PRECIS,
         DEFAULT_QUALITY,
         DEFAULT_PITCH | FF_SWISS,
-        "Arial"
+        L"Arial"
     );
     SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
 }

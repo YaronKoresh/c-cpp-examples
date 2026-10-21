@@ -41,6 +41,20 @@ int main(int argc, char **argv) {
 
     int failed = 0;
 
+    /* Hebrew text stays Hebrew in the list box, whatever the ANSI code page is */
+    const WCHAR hebrew[] = {0x5e9, 0x5dc, 0x5d5, 0x5dd, 0};
+    SetWindowTextW(edit, hebrew);
+    PressAdd();
+    WCHAR listed[16] = {0};
+    SendMessageW(listBox, LB_GETTEXT, 0, (LPARAM)listed);
+    if (ListCount() != 1 || lstrcmpW(listed, hebrew) != 0) {
+        puts("FAIL: Hebrew text did not reach the list box");
+        failed = 1;
+    }
+    SendMessage(listBox, LB_RESETCONTENT, 0, 0);
+    SendMessage(window, WM_COMMAND, MAKEWPARAM(1004, BN_CLICKED), 0);
+    Sleep(200);
+
     /* long text keeps every character */
     char longText[401];
     for (int i = 0; i < 400; i++) {
