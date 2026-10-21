@@ -3,6 +3,14 @@
 set -eu
 cd "$(dirname "$0")/.."
 CC="${CC:-x86_64-w64-mingw32-gcc}"
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  for f in hello.exe textbox.exe list.exe; do
+    if ! git check-ignore -q "$f"; then
+      echo "FAIL: $f is not ignored by git"
+      exit 1
+    fi
+  done
+fi
 for f in *.c; do
   if grep -q $'\xc2\xa0' "$f"; then
     echo "FAIL: $f contains non-breaking spaces"
