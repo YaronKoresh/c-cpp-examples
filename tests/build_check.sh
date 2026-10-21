@@ -76,4 +76,10 @@ if command -v wine >/dev/null 2>&1; then
   else
     (cd "${TMPDIR:-/tmp}" && wine textbox_ui_test.exe textbox.exe 2>/dev/null | tr -d "\r" | tee /dev/stderr | grep -qx ok)
   fi
+  "$CC" -Wall -Wextra -Werror -o "${TMPDIR:-/tmp}/textbox_scroll_test.exe" tests/textbox_scroll_test.c -luser32
+  if command -v xvfb-run >/dev/null 2>&1; then
+    (cd "${TMPDIR:-/tmp}" && xvfb-run -a wine textbox_scroll_test.exe textbox.exe 2>/dev/null | tr -d "\r" | tee /dev/stderr | grep -qx ok)
+  else
+    (cd "${TMPDIR:-/tmp}" && wine textbox_scroll_test.exe textbox.exe 2>/dev/null | tr -d "\r" | tee /dev/stderr | grep -qx ok)
+  fi
 fi
