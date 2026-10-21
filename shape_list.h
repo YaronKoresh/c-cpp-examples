@@ -42,4 +42,19 @@ static inline void RemoveShapeAt(Shape *shapes, int *numShapes, int index) {
     }
 }
 
+/* Makes room for one more shape. When the array is full the oldest freehand
+   (unlisted) shape is removed. Returns 1 if a slot is free, 0 if every shape is listed. */
+static inline int MakeRoomForShape(Shape *shapes, int *numShapes) {
+    if (*numShapes < MAX_SHAPES) {
+        return 1;
+    }
+    for (int i = 0; i < *numShapes; i++) {
+        if (!shapes[i].listed) {
+            RemoveShapeAt(shapes, numShapes, i);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 #endif

@@ -37,6 +37,26 @@ int main(void) {
     assert(MouseXFromLParam(((long long)300 << 16) | 120) == 120);
     assert(MouseYFromLParam(((long long)300 << 16) | 120) == 300);
 
+    /* a full array of freehand shapes loses the oldest one to make room */
+    num = MAX_SHAPES;
+    for (int i = 0; i < MAX_SHAPES; i++) {
+        fill(&shapes[i], i, 0);
+    }
+    assert(MakeRoomForShape(shapes, &num) == 1);
+    assert(num == MAX_SHAPES - 1 && shapes[0].x == 1);
+
+    /* a full array where every shape is listed stays unchanged */
+    num = MAX_SHAPES;
+    for (int i = 0; i < MAX_SHAPES; i++) {
+        fill(&shapes[i], i, 1);
+    }
+    assert(MakeRoomForShape(shapes, &num) == 0);
+    assert(num == MAX_SHAPES && shapes[0].x == 0);
+
+    /* an array with a free slot is not touched */
+    num = 3;
+    assert(MakeRoomForShape(shapes, &num) == 1 && num == 3);
+
     puts("ok");
     return 0;
 }

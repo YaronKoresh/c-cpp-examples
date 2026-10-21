@@ -77,7 +77,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 }
 
 void AddShape(int x, int y, int size, COLORREF color, int shapeType) {
-    if (numShapes < MAX_SHAPES) {
+    if (MakeRoomForShape(shapes, &numShapes)) {
         shapes[numShapes].x = x;
         shapes[numShapes].y = y;
         shapes[numShapes].size = size;
@@ -134,7 +134,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             if (LOWORD(wParam) == 1001) {
                 char buffer[256];
                 GetWindowText(hEdit, buffer, sizeof(buffer));
-                if (numShapes < MAX_SHAPES) {
+                if (MakeRoomForShape(shapes, &numShapes)) {
                     int listed = strlen(buffer) > 0;
                     if (listed) {
                         SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)buffer);
