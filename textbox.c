@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void AddControls(HWND hwnd);
@@ -74,9 +75,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_COMMAND:
             if (LOWORD(wParam) == 1001) {
                 if (HIWORD(wParam) == EN_CHANGE) {
-                    char buffer[256];
-                    GetWindowText(hEdit, buffer, sizeof(buffer));
-                    printf("Edit control text: %s\n", buffer);
+                    int textLength = GetWindowTextLength(hEdit);
+                    char *buffer = (char *)malloc(textLength + 1);
+                    if (buffer) {
+                        GetWindowText(hEdit, buffer, textLength + 1);
+                        printf("Edit control text: %s\n", buffer);
+                        free(buffer);
+                    }
                 }
             }
             break;
