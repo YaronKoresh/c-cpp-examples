@@ -23,4 +23,13 @@ static inline void ReplaceBackBuffer(HDC *memDC, HBITMAP *bitmap, HDC windowDC, 
     SelectObject(*memDC, *bitmap);
 }
 
+/* Repaints one window. A NULL window is refused, because InvalidateRect(NULL, ...)
+   would invalidate and redraw every window on the desktop. */
+static inline BOOL InvalidateOwnWindow(HWND hwnd) {
+    if (!hwnd) {
+        return FALSE;
+    }
+    return InvalidateRect(hwnd, NULL, TRUE);
+}
+
 #endif

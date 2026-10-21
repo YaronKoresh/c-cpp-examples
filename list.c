@@ -11,7 +11,7 @@ void AddControls(HWND hwnd);
 void DrawShapes(HWND hwnd, HDC hdc);
 void AddShape(int x, int y, int size, COLORREF color, int shapeType);
 void RemoveShape(int index);
-void ClearShapes();
+void ClearShapes(HWND hwnd);
 
 HWND hButtonAdd;
 HWND hButtonRemove;
@@ -93,9 +93,9 @@ void RemoveShape(int index) {
     RemoveShapeAt(shapes, &numShapes, index);
 }
 
-void ClearShapes() {
+void ClearShapes(HWND hwnd) {
     numShapes = 0;
-    InvalidateRect(NULL, NULL, TRUE);
+    InvalidateOwnWindow(hwnd);
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -156,7 +156,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
             }
             else if (LOWORD(wParam) == 1004) {
-                ClearShapes();
+                ClearShapes(hwnd);
                 SendMessage(hList, LB_RESETCONTENT, 0, 0);
             }
             break;
