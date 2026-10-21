@@ -63,6 +63,12 @@ if command -v wine >/dev/null 2>&1; then
   else
     (cd "${TMPDIR:-/tmp}" && wine list_scroll_test.exe list.exe 2>/dev/null | tr -d "\r" | tee /dev/stderr | grep -qx ok)
   fi
+  "$CC" -Wall -Wextra -o "${TMPDIR:-/tmp}/list_draw_test.exe" tests/list_draw_test.c -luser32 -lgdi32
+  if command -v xvfb-run >/dev/null 2>&1; then
+    (cd "${TMPDIR:-/tmp}" && xvfb-run -a -s "-screen 0 1280x800x24" wine list_draw_test.exe list.exe 2>/dev/null | tr -d "\r" | tee /dev/stderr | grep -qx ok)
+  else
+    (cd "${TMPDIR:-/tmp}" && wine list_draw_test.exe list.exe 2>/dev/null | tr -d "\r" | tee /dev/stderr | grep -qx ok)
+  fi
   "$CC" -Wall -Wextra -Werror -mwindows -o "${TMPDIR:-/tmp}/textbox.exe" textbox.c
   "$CC" -Wall -Wextra -Werror -o "${TMPDIR:-/tmp}/textbox_ui_test.exe" tests/textbox_ui_test.c -luser32
   if command -v xvfb-run >/dev/null 2>&1; then

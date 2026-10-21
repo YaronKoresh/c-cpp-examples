@@ -32,6 +32,7 @@ int clientWidth, clientHeight;
 ListLayout layout;
 bool isDrawing = false;
 int currentShapeType = 0;
+int lastDrawX = 0, lastDrawY = 0;
 COLORREF drawingColor = RGB(0, 0, 0);
 
 Shape shapes[MAX_SHAPES];
@@ -213,6 +214,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
         case WM_LBUTTONDOWN:
             isDrawing = true;
+            lastDrawX = MouseXFromLParam(lParam);
+            lastDrawY = MouseYFromLParam(lParam);
             SetCapture(hwnd);
             break;
         case WM_LBUTTONUP:
@@ -226,7 +229,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             if (isDrawing && LeftButtonHeld(wParam)) {
                 int x = MouseXFromLParam(lParam);
                 int y = MouseYFromLParam(lParam);
-                AddShape(x, y, 10, drawingColor, currentShapeType);
+                /* fills the way from the last point to this one, so a fast move leaves no gaps */
+                int steps = StrokeSteps(lastDrawX, lastDrawY, x, y, 10);
+                for (int i = 1; i <= steps; i++) {
+                    AddShape(lastDrawX + (x - lastDrawX) * i / steps, lastDrawY + (y - lastDrawY) * i / steps, 10,
+                             drawingColor, currentShapeType);
+                }
+                lastDrawX = x;
+                lastDrawY = y;
                 InvalidateRect(hwnd, NULL, FALSE);
             }
             break;

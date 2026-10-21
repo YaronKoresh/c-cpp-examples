@@ -119,6 +119,14 @@ int main(void) {
         assert(layout.list.width == LEFT_COLUMN_WIDTH && layout.canvas.x == 500 && layout.canvas.width == 300);
     }
 
+    /* a stroke has a shape for every size the mouse moved, and at least one */
+    assert(StrokeSteps(5, 5, 5, 5, 10) == 1);
+    assert(StrokeSteps(0, 0, 9, 0, 10) == 1);
+    assert(StrokeSteps(0, 0, 100, 0, 10) == 10);
+    assert(StrokeSteps(100, 0, 0, 30, 10) == 10);
+    assert(StrokeSteps(0, 50, 20, -50, 10) == 10);
+    assert(StrokeSteps(0, 0, 100, 0, 0) == 1);
+
     /* MK_LBUTTON is bit 0 of the mouse message key flags */
     assert(LeftButtonHeld(0x0001) == 1);
     assert(LeftButtonHeld(0x0005) == 1);

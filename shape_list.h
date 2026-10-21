@@ -99,6 +99,18 @@ static inline void RandomShapePosition(const LayoutBox *canvas, int size, int *x
     *y = canvas->y + RandomBelow(canvas->height - size + 1);
 }
 
+/* Number of shapes of the given size that draw a continuous line from one point to the next:
+   at least 1, and one more for every full size the points are apart. */
+static inline int StrokeSteps(int x0, int y0, int x1, int y1, int size) {
+    int dx = x1 > x0 ? x1 - x0 : x0 - x1;
+    int dy = y1 > y0 ? y1 - y0 : y0 - y1;
+    int distance = dx > dy ? dx : dy;
+    if (size < 1) {
+        return 1;
+    }
+    return distance / size > 1 ? distance / size : 1;
+}
+
 /* True when the left mouse button is held, from the wParam key flags of a mouse message (MK_LBUTTON). */
 static inline int LeftButtonHeld(unsigned long long keyFlags) {
     return (keyFlags & 0x0001) != 0;
