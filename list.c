@@ -88,6 +88,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             SendMessage(hwnd, WM_COMMAND, MAKEWPARAM(1001, BN_CLICKED), (LPARAM)hButtonAdd);
             continue;
         }
+        if (msg.message == WM_KEYDOWN && msg.wParam == VK_ESCAPE && hEdit && msg.hwnd == hEdit) {
+            SetWindowText(hEdit, L"");
+            continue;
+        }
         if (msg.message == WM_KEYDOWN && msg.wParam == VK_DELETE && hList && msg.hwnd == hList) {
             SendMessage(hwnd, WM_COMMAND, MAKEWPARAM(1003, BN_CLICKED), (LPARAM)hButtonRemove);
             continue;

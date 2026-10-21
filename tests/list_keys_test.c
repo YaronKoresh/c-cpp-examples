@@ -57,6 +57,16 @@ int main(int argc, char **argv) {
         failed = 1;
     }
 
+    /* Escape clears the text of the edit control */
+    SetWindowText(edit, "draft");
+    PostMessage(edit, WM_KEYDOWN, VK_ESCAPE, 0);
+    Sleep(300);
+    SendMessage(edit, WM_GETTEXT, sizeof(typed), (LPARAM)typed);
+    if (typed[0] != '\0') {
+        puts("FAIL: Escape did not clear the edit control");
+        failed = 1;
+    }
+
     /* Delete removes the selected item */
     AddItem("first");
     AddItem("second");
