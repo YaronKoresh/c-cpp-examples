@@ -305,14 +305,6 @@ void AddControls(HWND hwnd) {
 
 void DrawShapes(HWND hwnd, HDC hdc) {
     for (int i = 0; i < numShapes; i++) {
-        HBRUSH hBrush = CreateSolidBrush(shapes[i].color);
-        SelectObject(hdc, hBrush);
-
-        if (shapes[i].shapeType == 0) {
-            Rectangle(hdc, shapes[i].x, shapes[i].y, shapes[i].x + shapes[i].size, shapes[i].y + shapes[i].size);
-        } else {
-            Ellipse(hdc, shapes[i].x, shapes[i].y, shapes[i].x + shapes[i].size, shapes[i].y + shapes[i].size);
-        }
-        DeleteObject(hBrush);
+        DrawShapeOnDC(hdc, &shapes[i]);
     }
 }
