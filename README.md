@@ -6,7 +6,7 @@ Small Win32 programs written in C, for learning.
 | --- | --- |
 | `hello.c` | A message box. |
 | `textbox.c` | A window with a multiline edit control that follows the window size. |
-| `list.c` | A list box, buttons, freehand drawing and a double-buffered window. |
+| `list.c` | A list box, buttons (also Enter and Delete), freehand drawing and a double-buffered window. |
 | `shape_list.h` | Window-free helpers for the shape list used by `list.c`. |
 | `backbuffer.h` | GDI helpers for the off-screen buffer, shapes and repainting. |
 

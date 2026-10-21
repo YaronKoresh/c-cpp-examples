@@ -103,6 +103,22 @@ int main(int argc, char **argv) {
         failed = 1;
     }
 
+    /* Delete in the list box removes the selected item like the button, and nothing without a selection */
+    SendMessage(listBox, LB_SETCURSEL, 0, 0);
+    PostMessage(listBox, WM_KEYDOWN, VK_DELETE, 0);
+    Sleep(300);
+    if (ListCount() != 2) {
+        puts("FAIL: Delete did not remove the selected item");
+        failed = 1;
+    }
+    SendMessage(listBox, LB_SETCURSEL, (WPARAM)-1, 0);
+    PostMessage(listBox, WM_KEYDOWN, VK_DELETE, 0);
+    Sleep(300);
+    if (ListCount() != 2) {
+        puts("FAIL: Delete without a selection removed an item");
+        failed = 1;
+    }
+
     /* a full list tells the user why Add does nothing */
     while (ListCount() < 100) {
         SetWindowText(edit, "item");
