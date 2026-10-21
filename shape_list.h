@@ -56,6 +56,8 @@ typedef struct {
 } ListLayout;
 
 #define LEFT_COLUMN_WIDTH 480
+#define BUTTON_MAX_WIDTH 150
+#define BUTTON_GAP 10
 
 static inline int AtLeastZero(int value) {
     return value < 0 ? 0 : value;
@@ -68,14 +70,21 @@ static inline ListLayout ComputeListLayout(int clientWidth, int clientHeight) {
     ListLayout layout;
     int left = AtLeastZero(clientWidth - 20);
     int buttonTop = clientHeight - 100;
+    int buttonWidth, gap;
     if (left > LEFT_COLUMN_WIDTH) {
         left = LEFT_COLUMN_WIDTH;
     }
+    /* the three buttons share the width of the left column, up to 150 each */
+    buttonWidth = AtLeastZero((left - 2 * BUTTON_GAP) / 3);
+    if (buttonWidth > BUTTON_MAX_WIDTH) {
+        buttonWidth = BUTTON_MAX_WIDTH;
+    }
+    gap = buttonWidth > 0 ? BUTTON_GAP : 0;
     layout.edit = (LayoutBox){10, 10, left, 20};
     layout.list = (LayoutBox){10, 40, left, AtLeastZero(clientHeight - 150)};
-    layout.addButton = (LayoutBox){10, buttonTop, 150, 30};
-    layout.removeButton = (LayoutBox){170, buttonTop, 150, 30};
-    layout.clearButton = (LayoutBox){330, buttonTop, 150, 30};
+    layout.addButton = (LayoutBox){10, buttonTop, buttonWidth, 30};
+    layout.removeButton = (LayoutBox){10 + buttonWidth + gap, buttonTop, buttonWidth, 30};
+    layout.clearButton = (LayoutBox){10 + 2 * (buttonWidth + gap), buttonTop, buttonWidth, 30};
     layout.canvas.x = left + 20;
     layout.canvas.y = 0;
     layout.canvas.width = AtLeastZero(clientWidth - layout.canvas.x);

@@ -98,6 +98,22 @@ int main(void) {
             }
         }
     }
+    /* the buttons stay inside the left column, in order, without overlapping */
+    for (int width = 0; width <= 1600; width++) {
+        ListLayout layout = ComputeListLayout(width, 600);
+        int right = layout.edit.x + layout.edit.width;
+        assert(layout.addButton.x + layout.addButton.width <= layout.removeButton.x);
+        assert(layout.removeButton.x + layout.removeButton.width <= layout.clearButton.x);
+        assert(layout.clearButton.x + layout.clearButton.width <= right);
+        assert(layout.addButton.width == layout.removeButton.width && layout.removeButton.width == layout.clearButton.width);
+        assert(layout.addButton.width <= 150);
+        if (width >= 500) {
+            assert(layout.addButton.width == 150 && layout.clearButton.x == 330);
+        }
+        if (width >= 100) {
+            assert(layout.addButton.width > 0);
+        }
+    }
     {
         ListLayout layout = ComputeListLayout(800, 600);
         assert(layout.list.width == LEFT_COLUMN_WIDTH && layout.canvas.x == 500 && layout.canvas.width == 300);
