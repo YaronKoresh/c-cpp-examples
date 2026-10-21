@@ -71,6 +71,12 @@ int main(int argc, char **argv) {
     AddItem("first");
     AddItem("second");
     AddItem("third");
+    char title[64] = "";
+    GetWindowText(window, title, sizeof(title));
+    if (strcmp(title, "My colorful list (3)") != 0) {
+        puts("FAIL: the window title does not show 3 items");
+        failed = 1;
+    }
     SendMessage(listBox, LB_SETCURSEL, 1, 0);
     SetFocus(listBox);
     Sleep(200);
@@ -87,6 +93,12 @@ int main(int argc, char **argv) {
             puts("FAIL: Delete removed the wrong item");
             failed = 1;
         }
+    }
+
+    GetWindowText(window, title, sizeof(title));
+    if (strcmp(title, "My colorful list (2)") != 0) {
+        puts("FAIL: the window title does not show 2 items after Delete");
+        failed = 1;
     }
 
     /* the item that took the place of the removed one is selected, so Delete works again */

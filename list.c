@@ -20,6 +20,7 @@ void RemoveShape(int index);
 void ClearShapes(HWND hwnd);
 void PlaceControl(HWND control, const LayoutBox *box);
 void UpdateListScrollExtent(void);
+void UpdateTitle(HWND hwnd);
 
 HWND hButtonAdd;
 HWND hButtonRemove;
@@ -161,6 +162,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     if (listed) {
                         SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)buffer);
                         UpdateListScrollExtent();
+                        UpdateTitle(hwnd);
                         SetWindowText(hEdit, L"");
                     }
                     shapes[numShapes].size = (rand() % 50) + 20;
@@ -187,6 +189,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         SendMessage(hList, LB_SETCURSEL, selectedIndex < remaining ? selectedIndex : remaining - 1, 0);
                     }
                     UpdateListScrollExtent();
+                    UpdateTitle(hwnd);
                     InvalidateRect(hwnd, NULL, FALSE);
                 }
             }
@@ -194,6 +197,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 ClearShapes(hwnd);
                 SendMessage(hList, LB_RESETCONTENT, 0, 0);
                 UpdateListScrollExtent();
+                UpdateTitle(hwnd);
             }
             break;
         case WM_PAINT: {
@@ -367,6 +371,17 @@ void PlaceControl(HWND control, const LayoutBox *box) {
     if (control) {
         MoveWindow(control, box->x, box->y, box->width, box->height, TRUE);
     }
+}
+
+/* Shows the number of list items in the window title. */
+void UpdateTitle(HWND hwnd) {
+    wchar_t title[64];
+    int count = (int)SendMessage(hList, LB_GETCOUNT, 0, 0);
+    if (count < 0) {
+        count = 0;
+    }
+    swprintf(title, sizeof(title) / sizeof(title[0]), L"My colorful list (%d)", count);
+    SetWindowText(hwnd, title);
 }
 
 /* Sets the width the list box can scroll sideways to the width of its widest item, so that
