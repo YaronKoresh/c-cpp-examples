@@ -85,6 +85,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             SendMessage(hwnd, WM_COMMAND, MAKEWPARAM(1001, BN_CLICKED), (LPARAM)hButtonAdd);
             continue;
         }
+        if (msg.message == WM_KEYDOWN && msg.wParam == VK_DELETE && hList && msg.hwnd == hList) {
+            SendMessage(hwnd, WM_COMMAND, MAKEWPARAM(1003, BN_CLICKED), (LPARAM)hButtonRemove);
+            continue;
+        }
         /* Lets Tab and Shift+Tab move the focus between the controls that have WS_TABSTOP. */
         if (IsDialogMessage(hwnd, &msg)) {
             continue;
